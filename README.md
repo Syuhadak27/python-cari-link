@@ -1,14 +1,17 @@
 #Cara menggunakan via termux android
 
-''shell
+'''shell
 pkg update -y
-''
-''shell
+'''
+
+'''shell
 pkg install python -y
-''
-''shell
+'''
+
+'''shell
 pip install -r requirements.txt
-''
-''shell
+'''
+
+'''shell
 python main.py
-''
+'''
