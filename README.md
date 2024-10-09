@@ -1,6 +1,6 @@
-# Judul Proyek Anda
+#
 
-Deskripsi singkat tentang proyek Anda.
+Deskripsi
 
 ## Perintah Docker
 
@@ -22,25 +22,11 @@ sudo docker run -p 80:80 -p 8080:8080 syd
 
 Berikut beberapa perintah lain yang mungkin berguna:
 
-Untuk melihat
+Untuk melihat docker image yang berjalan
 ```shell
-docker ps
+sudo docker ps
 ```
-
-## Perintah Git
-
-Untuk mengunggah perubahan ke GitHub, gunakan perintah berikut:
-
+untuk menghentikan image docker yg berjalan
 ```shell
-git add README.md
-git commit -m "Menambahkan README.md dengan perintah yang dapat diklik"
-git push origin main
+sudo docker stop ID_DARI_Docker
 ```
-
-## Kontribusi
-
-Jelaskan bagaimana orang lain dapat berkontribusi pada proyek Anda.
-
-## Lisensi
-
-Sebutkan lisensi proyek Anda di sini.
