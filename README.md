@@ -17,7 +17,13 @@ Untuk menjalankan image docker
 ```shell
 sudo docker run -p 80:80 -p 8080:8080 syd
 ```
-
+#Perintah Build tanpa Port
+```shell
+sudo docker build -t syd .
+```
+```shell
+sudo docker run -d --restart unless-stopped syd
+```
 ## Perintah Lainnya
 
 Berikut beberapa perintah lain yang mungkin berguna:
