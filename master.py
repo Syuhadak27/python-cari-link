@@ -38,16 +38,16 @@ def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
 
     filtered_data = [row for row in cached_main_data if all(re.search(re.escape(part), ' '.join(row), re.IGNORECASE) for part in query_parts)]
     
-    response = f"{RESPON_TEXT} • • <i>Kata Kunci</i> : <code>. {query}</code>\n\n"
+    response = f"{RESPON_TEXT} • • <i>Kata Kunci</i> : <code>{query}</code>\n\n"
     
     if filtered_data:
         for row in filtered_data:
             # Kolom pertama dalam italic dan kolom kedua dalam code block
             formatted_row = [
-                f"<tg-spoiler>{row[0]}</tg-spoiler>",  # Kolom pertama diformat italic
+                f"<s><i>{row[0]}</i></s>",  # Kolom pertama diformat italic
                 f"<code><b>{row[1]}</b></code>"  # Kolom kedua diformat dengan code block
             ] + row[2:]  # Kolom lainnya tetap seperti apa adanya
-            response += "<blockquote>➡️ " + ' • '.join(formatted_row) + "</blockquote>\n"
+            response += "<blockquote>" + ' • '.join(formatted_row) + "</blockquote>\n"
             #response += "➡️ " + ' • '.join(formatted_row) + "\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n"
         
         schedule_deletion(bot, message.chat.id, message.message_id, 2)
