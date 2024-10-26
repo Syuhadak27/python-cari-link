@@ -15,7 +15,7 @@ def ping(bot, message):
     ping_time = int((end_time - start_time) * 1000)
 
     # Edit pesan untuk menunjukkan hasil ping
-    bot.edit_message_text(chat_id=message.chat.id, message_id=reply.message_id, text=f'<tg-spoiler>Pong😜😜 \n{ping_time} ms</tg-spoiler>',parse_mode="HTML")
+    bot.edit_message_text(chat_id=message.chat.id, message_id=reply.message_id, text=f'<i>Pong😜😜 \n{ping_time} ms</i>',parse_mode="HTML")
 
     # Hapus pesan pengguna setelah 3 detik
     threading.Thread(target=delayed_delete, args=(bot, message.chat.id, message.message_id, 3)).start()
