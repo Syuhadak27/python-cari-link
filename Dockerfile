@@ -1,15 +1,15 @@
-# Menggunakan image Python sebagai base
 FROM python:3.10-slim
 
-# Set working directory di dalam container
 WORKDIR /app
 
-# Copy semua file dari direktori lokal ke direktori kerja di dalam container
+# Salin file ke direktori kerja
 COPY . .
 
-# Install dependencies dari file requirements.txt jika ada
-# Jika tidak ada requirements.txt, baris ini bisa dihapus
+# Install dependencies dari requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Menjalankan main.py saat container dimulai
-CMD ["python", "main.py"]
+# Pastikan start.sh memiliki izin eksekusi
+RUN chmod +x start.sh
+
+# Tentukan perintah untuk dijalankan
+CMD ["bash", "./start.sh"]
