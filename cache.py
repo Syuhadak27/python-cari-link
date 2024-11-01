@@ -33,17 +33,22 @@ def reset_cache(data_type=None):
         cache_timestamps["main"] = 0
         cached_list_data = None
         cache_timestamps["list"] = 0
+        return "Seluruh cache berhasil di-reset."
     elif data_type == "inout":
         cached_inout_data = None
         cache_timestamps["inout"] = 0
+        return "Cache inout berhasil di-reset."
     elif data_type == "stok":
         cached_stok_data = None
         cache_timestamps["stok"] = 0
+        return "Cache stok berhasil di-reset."
     elif data_type == "main":
         cached_main_data = None
         cache_timestamps["main"] = 0
+        return "Cache main berhasil di-reset."
     elif data_type == "list":
         cached_list_data = None
         cache_timestamps["list"] = 0
+        return "Cache list berhasil di-reset."
     else:
         raise ValueError("Invalid data type")

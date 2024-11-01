@@ -6,6 +6,8 @@ from Button import create_refresh_button
 from pesan import KURANG_KATA, TIDAK_ADA, RESPON_TEXT
 from delete import schedule_deletion, delete_message_safe
 from cache import get_google_sheet_data, cached_main_data, cached_list_data, reset_cache, cache_timestamps, CACHE_EXPIRY
+from extra.log import send_log_to_channel
+from extra.fsub import check_membership, prompt_join_channel  # Import dari fsub.py
 
 def handle_refresh(bot, message):
     global cached_inout_data, cached_stok_data, cached_main_data, cached_list_data, cache_timestamps
@@ -27,8 +29,16 @@ def schedule_deletion(bot, chat_id, message_id, delay):
     threading.Timer(delay, lambda: delete_message_safe(bot, chat_id, message_id)).start()
 
 def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
+# Cek apakah pengguna sudah join channel
+    if not check_membership(bot, message.from_user.id):
+        msg = prompt_join_channel(bot, message.chat.id)
+        schedule_deletion(bot, message.chat.id, msg.message_id, 10)
+        schedule_deletion(bot, message.chat.id, message.message_id, 2)
+        return
     global cached_main_data
     query = message.text
+    # Log pengguna dan query
+    send_log_to_channel(bot, message.from_user, query)
 
     query_parts = query.split()
 
@@ -44,7 +54,7 @@ def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
         for row in filtered_data:
             # Kolom pertama dalam italic dan kolom kedua dalam code block
             formatted_row = [
-                f"<s><i>{row[0]}</i></s>",  # Kolom pertama diformat italic
+                f"<i>{row[0]}</i>",  # Kolom pertama diformat italic
                 f"<code><b>{row[1]}</b></code>"  # Kolom kedua diformat dengan code block
             ] + row[2:]  # Kolom lainnya tetap seperti apa adanya
             response += "<blockquote>" + ' • '.join(formatted_row) + "</blockquote>\n"

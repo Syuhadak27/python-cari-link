@@ -6,6 +6,10 @@ from start import handle_help, handle_start
 from list import handle_list
 from delete import schedule_deletion
 from master import handle_refresh, handle_message
+from extra.wa import wa_handler 
+from extra.p import ping
+from cache import reset_cache
+
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
@@ -15,8 +19,7 @@ def handle_delete_callback(call):
     message_id = call.message.message_id
     schedule_deletion(bot, chat_id, message_id)
     
-from extra.wa import wa_handler 
-from extra.p import ping
+
 @bot.message_handler(commands=['ping'])
 def ping_handler(message):
     #bot.reply_to(message, 'Pong!')
@@ -48,7 +51,8 @@ def callback_refresh(call):
 
 @bot.message_handler(commands=['refresh'])
 def refresh_cache(message):
-    handle_refresh(bot, message)
+    result_message = reset_cache()  # Memanggil reset_cache() dan menyimpan pesan hasil
+    bot.reply_to(message, result_message)  # Mengirim pesan hasil ke pengguna
 
 @bot.message_handler(func=lambda message: message.text.startswith(('. ','/inout')))
 def inout_handler(message):
@@ -67,10 +71,18 @@ def message_handler(message):
     handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME)
 
 if __name__ == "__main__":
-    print("Bot berjalan 🔴🔴🔴⚪⚪")
-    #bot.polling()
+    bot_info = bot.get_me()
+    bot_name = bot_info.first_name
+
+    print(f"Bot '{bot_name}' berjalan 🔴🔴🔴⚪⚪")
+    
     print("Starting bot polling...")
+    #print("Bot berjalan 🔴🔴🔴⚪⚪")
+    #bot.polling()
+    #print("Starting bot polling...")
 try:
     bot.polling(non_stop=True)
 except Exception as e:
     print(f"Error occurred: {e}")
+    
+    

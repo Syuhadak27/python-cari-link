@@ -5,10 +5,15 @@ from telebot import TeleBot
 from Button import create_refresh_button
 from delete import schedule_deletion
 from cache import get_google_sheet_data, cached_inout_data, cache_timestamps, CACHE_EXPIRY
+from convert import convert_to_emoticons
+from extra.log import send_log_to_channel_inout
 
 def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
     global cached_inout_data
     query = message.text[1:]  # Menghapus titik di awal
+    # Log pengguna dan query
+    send_log_to_channel_inout(bot, message.from_user, query)
+
 
     if not query:
         msg = bot.reply_to(message, "Tidak bisa tanpa kata kunci")
@@ -31,6 +36,12 @@ def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
     
     if filtered_data:
         for row in filtered_data:
+            # Ubah kolom 4 dan 5 menjadi emoticon angka
+            if len(row) > 4:
+                row[3] = convert_to_emoticons(row[3])  # Kolom 4
+            if len(row) > 5:
+                row[4] = convert_to_emoticons(row[4])  # Kolom 5
+
             # Format kolom pertama dengan <pre><code> agar bisa di-copy dengan sekali klik
             response += f"<blockquote>🔄<code>{row[0]}</code> • " + ' • '.join(row[1:]) + "</blockquote>\n"
         schedule_deletion(bot, message.chat.id, message.message_id, 2)
