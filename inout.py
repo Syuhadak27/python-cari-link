@@ -5,15 +5,12 @@ from telebot import TeleBot
 from Button import create_refresh_button
 from delete import schedule_deletion
 from cache import get_google_sheet_data, cached_inout_data, cache_timestamps, CACHE_EXPIRY
-from convert import convert_to_emoticons
 from extra.log import send_log_to_channel_inout
 
 def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
     global cached_inout_data
     query = message.text[1:]  # Menghapus titik di awal
-    # Log pengguna dan query
     send_log_to_channel_inout(bot, message.from_user, query)
-
 
     if not query:
         msg = bot.reply_to(message, "Tidak bisa tanpa kata kunci")
@@ -27,21 +24,31 @@ def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
         cached_inout_data = get_google_sheet_data(INOUT_ID, RANGE_INOUT)
         cache_timestamps["inout"] = time.time()
 
+    # Filter data berdasarkan kata kunci
     filtered_data = [
         row for row in cached_inout_data 
         if all(re.search(re.escape(part), ' '.join(row), re.IGNORECASE) for part in query_parts)
     ]
 
-    response = f"Kata Kunci: <code>{query}</code>\nKet:\n🟢 Masuk \n🔴 <b>Keluar</b>\n\n"
-    
+    # Fungsi untuk membersihkan data numerik dari karakter non-digit
+    def clean_number(value):
+        try:
+            # Hapus semua karakter selain angka dan titik desimal
+            cleaned_value = re.sub(r"[^\d.]", "", value)
+            return float(cleaned_value) if cleaned_value else 0
+        except ValueError:
+            return 0
+
+    # Menghitung jumlah kolom 4 dan kolom 5 dengan pembersihan data
+    sum_kolom_4 = sum(clean_number(row[3]) for row in filtered_data)
+    sum_kolom_5 = sum(clean_number(row[4]) for row in filtered_data)
+
+    # Membangun respon dengan format baru
+    response = f"Kata Kunci: <code>{query}</code>\n"
+    response += f"Ket:\n🟢 Masuk -- {int(sum_kolom_4)} pcs\n🔴 Keluar -- {int(sum_kolom_5)} pcs\n\n"
+
     if filtered_data:
         for row in filtered_data:
-            # Ubah kolom 4 dan 5 menjadi emoticon angka
-            if len(row) > 4:
-                row[3] = convert_to_emoticons(row[3])  # Kolom 4
-            if len(row) > 5:
-                row[4] = convert_to_emoticons(row[4])  # Kolom 5
-
             # Format kolom pertama dengan <pre><code> agar bisa di-copy dengan sekali klik
             response += f"<blockquote>🔄<code>{row[0]}</code> • " + ' • '.join(row[1:]) + "</blockquote>\n"
         schedule_deletion(bot, message.chat.id, message.message_id, 2)
