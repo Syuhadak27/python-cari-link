@@ -10,7 +10,7 @@ cached_main_data = None
 cached_list_data = None
 
 # Waktu kedaluwarsa cache dalam detik (24 jam)
-CACHE_EXPIRY = 45989
+CACHE_EXPIRY = 7200
 cache_timestamps = {
     "inout": 0,
     "stok": 0,
