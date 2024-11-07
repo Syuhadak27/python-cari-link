@@ -1,11 +1,14 @@
 import re
 import time
 import threading
+import pytz
 from telebot import TeleBot
 from Button import create_refresh_button
 from delete import schedule_deletion
 from cache import get_google_sheet_data, cached_inout_data, cache_timestamps, CACHE_EXPIRY
+from collections import defaultdict
 from extra.log import send_log_to_channel_inout
+from datetime import datetime
 
 def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
     global cached_inout_data
@@ -33,24 +36,38 @@ def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
     # Fungsi untuk membersihkan data numerik dari karakter non-digit
     def clean_number(value):
         try:
-            # Hapus semua karakter selain angka dan titik desimal
             cleaned_value = re.sub(r"[^\d.]", "", value)
             return float(cleaned_value) if cleaned_value else 0
         except ValueError:
             return 0
 
-    # Menghitung jumlah kolom 4 dan kolom 5 dengan pembersihan data
-    sum_kolom_4 = sum(clean_number(row[3]) for row in filtered_data)
-    sum_kolom_5 = sum(clean_number(row[4]) for row in filtered_data)
+    # Membuat kamus untuk menyimpan total jumlah kolom 5 berdasarkan nama di kolom 6
+    sum_by_name = defaultdict(float)
+
+    for row in filtered_data:
+        name = row[5]  # Kolom 6 adalah nama
+        value_col_5 = clean_number(row[4])  # Kolom 5 adalah nilai yang dijumlahkan
+        sum_by_name[name] += value_col_5
 
     # Membangun respon dengan format baru
     response = f"Kata Kunci: <code>{query}</code>\n"
-    response += f"Ket:\n🟢 Masuk -- {int(sum_kolom_4)} pcs\n🔴 Keluar -- {int(sum_kolom_5)} pcs\n\n"
+    response += f"Ket:\n🟢 Masuk -- {int(sum(clean_number(row[3]) for row in filtered_data))} pcs\n"
+    response += f"🔴 Keluar -- {int(sum(clean_number(row[4]) for row in filtered_data))} pcs\n\n"
+    
+    # Menambahkan hasil SUMIF ke dalam respon
+    response += "📊 Jumlah berdasarkan Nama:\n"
+    response += ' • '.join(f"{name}: {int(total)} pcs" for name, total in sum_by_name.items()) + "\n\n"
 
     if filtered_data:
         for row in filtered_data:
             # Format kolom pertama dengan <pre><code> agar bisa di-copy dengan sekali klik
             response += f"<blockquote>🔄<code>{row[0]}</code> • " + ' • '.join(row[1:]) + "</blockquote>\n"
+        
+        # Menambahkan waktu pembaruan cache terakhir dengan zona waktu GMT+7
+        jakarta_timezone = pytz.timezone("Asia/Jakarta")
+        last_update_time = datetime.fromtimestamp(cache_timestamps["inout"], jakarta_timezone).strftime("%d/%m/%Y %H:%M:%S")
+        response += f"\n\n<pre><i>Data diupdate pada: {last_update_time}</i></pre>"
+        
         schedule_deletion(bot, message.chat.id, message.message_id, 2)
     else:
         response = "Salah kata kunci dan tidak ditemukan😜\n\nUntuk memperbarui data tekan tombol di bawah."

@@ -1,13 +1,14 @@
 import time
 import re
-import threading  # Tambahkan ini untuk menggunakan threading
+import threading
 from telebot import TeleBot
 from Button import create_refresh_button
 from pesan import KURANG_KATA, TIDAK_ADA, RESPON_TEXT
 from delete import schedule_deletion, delete_message_safe
 from cache import get_google_sheet_data, cached_main_data, cached_list_data, reset_cache, cache_timestamps, CACHE_EXPIRY
 from extra.log import send_log_to_channel
-from extra.fsub import check_membership, prompt_join_channel  # Import dari fsub.py
+from extra.fsub import check_membership, prompt_join_channel
+from datetime import datetime, timedelta, timezone
 
 def handle_refresh(bot, message):
     global cached_inout_data, cached_stok_data, cached_main_data, cached_list_data, cache_timestamps
@@ -21,7 +22,7 @@ def handle_refresh(bot, message):
         "main": 0,
         "list": 0
     }
-    msg = bot.reply_to(message, "Data telah di perbarui, coba ulangi kata kunci nya lagi🥰")
+    msg = bot.reply_to(message, "Data telah diperbarui, coba ulangi kata kuncinya lagi🥰")
     schedule_deletion(bot, message.chat.id, msg.message_id, 1)
     schedule_deletion(bot, message.chat.id, message.message_id, 1)
 
@@ -29,7 +30,6 @@ def schedule_deletion(bot, chat_id, message_id, delay):
     threading.Timer(delay, lambda: delete_message_safe(bot, chat_id, message_id)).start()
 
 def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
-# Cek apakah pengguna sudah join channel
     if not check_membership(bot, message.from_user.id):
         msg = prompt_join_channel(bot, message.chat.id)
         schedule_deletion(bot, message.chat.id, msg.message_id, 10)
@@ -37,7 +37,6 @@ def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
         return
     global cached_main_data
     query = message.text
-    # Log pengguna dan query
     send_log_to_channel(bot, message.from_user, query)
 
     query_parts = query.split()
@@ -52,14 +51,15 @@ def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
     
     if filtered_data:
         for row in filtered_data:
-            # Kolom pertama dalam italic dan kolom kedua dalam code block
             formatted_row = [
-                f"<i>{row[0]}</i>",  # Kolom pertama diformat italic
-                f"<code><b>{row[1]}</b></code>"  # Kolom kedua diformat dengan code block
-            ] + row[2:]  # Kolom lainnya tetap seperti apa adanya
+                f"<i>{row[0]}</i>",
+                f"<code><b>{row[1]}</b></code>"
+            ] + row[2:]
             response += "<blockquote>" + ' • '.join(formatted_row) + "</blockquote>\n"
-            #response += "➡️ " + ' • '.join(formatted_row) + "\n▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n"
         
+        # Format waktu pembaruan cache terakhir dalam GMT+7
+        last_update_time = (datetime.fromtimestamp(cache_timestamps["main"], timezone.utc) + timedelta(hours=7)).strftime("%d/%m/%Y %H:%M:%S")
+        response += f"\n\n<i>Data diupdate pada: {last_update_time} </i>\n<i>✨ Powered by ChatAi • @AlfiSyuhadak✨</i>"
         schedule_deletion(bot, message.chat.id, message.message_id, 2)
     else:
         response = TIDAK_ADA
@@ -70,7 +70,6 @@ def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
 
     def send_long_message(chat_id, message_text):
         max_length = 4096
-        # Memastikan pesan tidak terpotong di tengah tag HTML
         while message_text:
             part = message_text[:max_length]
             if len(part) == max_length:
