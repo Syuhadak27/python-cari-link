@@ -28,10 +28,14 @@ def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
         cache_timestamps["inout"] = time.time()
 
     # Filter data berdasarkan kata kunci
+    #filtered_data = [
+      #  row for row in cached_inout_data 
+       # if all(re.search(re.escape(part), ' '.join(row), re.IGNORECASE) for part in query_parts)
+   # ]
     filtered_data = [
-        row for row in cached_inout_data 
-        if all(re.search(re.escape(part), ' '.join(row), re.IGNORECASE) for part in query_parts)
-    ]
+      row for row in cached_inout_data 
+      if all(re.search(rf'\b{re.escape(part)}\b', ' '.join(row), re.IGNORECASE) for part in query_parts)
+     ]
 
     # Fungsi untuk membersihkan data numerik dari karakter non-digit
     def clean_number(value):

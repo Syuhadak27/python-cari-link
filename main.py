@@ -9,7 +9,7 @@ from master import handle_refresh, handle_message
 from extra.wa import wa_handler 
 from extra.p import ping
 from cache import reset_cache
-
+from extra.log import send_log_to_channel
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
@@ -24,20 +24,25 @@ def handle_delete_callback(call):
 def ping_handler(message):
     #bot.reply_to(message, 'Pong!')
     ping(bot, message)
+    send_log_to_channel(bot, message.from_user, message.text)  # Rekam pesan
     
 @bot.message_handler(commands=['p'])
 def p_handler(message):
     #bot.reply_to(message, 'Pong!')
     ping(bot, message)
+    send_log_to_channel(bot, message.from_user, message.text)  # Rekam pesan
+    
 
 # Command handler untuk /wa
 @bot.message_handler(commands=['wa'])
 def handle_wa(message):
-    wa_handler(bot, message)  # Panggil fungsi wa_handler dari wa.py
+    wa_handler(bot, message)
+    send_log_to_channel(bot, message.from_user, message.text)  # Rekam pesan
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     handle_start(bot, message)
+    send_log_to_channel(bot, message.from_user, message.text)  # Rekam pesan
 
 @bot.message_handler(commands=['help'])
 def send_help(message):
@@ -61,6 +66,7 @@ def inout_handler(message):
 @bot.message_handler(func=lambda message: message.text.startswith(('.stok ', '/stok')))
 def stok(message):
     handle_stok(bot, message, SPREADSHEET_ID, RANGE_STOK)
+    send_log_to_channel(bot, message.from_user, message.text)  # Rekam pesan
 
 @bot.message_handler(func=lambda message: message.text.startswith(('.list ','/list')))
 def list(message):
