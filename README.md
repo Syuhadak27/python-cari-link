@@ -67,11 +67,15 @@ git push heroku main
 heroku logs -t
 ```
 
-(Optional)
+## (Optional)
 Disable DYNO
-$ heroku ps:scale worker=0
+```shell
+heroku ps:scale worker=0
+```
 ENABLE DYNO
-$ heroku ps:scale worker=1
+```shell
+heroku ps:scale worker=1
+```
 
 Jika gagal 
 heroku git:remote -a 
