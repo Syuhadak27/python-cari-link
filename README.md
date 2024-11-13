@@ -43,23 +43,21 @@ sudo docker stop ID_DARI_Docker
 
 ## Deploy ke HEROKU
 
-
-
-$ ```shell
+```shell
 heroku git:remote -a nama app
 ```
 
-$ ```shell
+```shell
 git add . 
 ```
 
-$ ```shell
+ ```shell
 git commit -am "make it better" 
 ```
-$ ```shell
+```shell
 git push heroku main
 ```
-$ ```shell
+```shell
 heroku logs -t
 ```
 
