@@ -9,6 +9,14 @@ try:
     # Load konfigurasi dari file .env
     load_dotenv('CONFIG.ENV')
     gist_url = os.getenv('GIST_URL')
+    BOT_TOKEN = os.getenv("BOT_TOKEN")
+    SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
+    RANGE_NAME = os.getenv("RANGE_NAME")
+    RANGE_INOUT = os.getenv("RANGE_INOUT")
+    RANGE_STOK = os.getenv("RANGE_STOK")
+    RANGE_LIST = os.getenv("RANGE_LIST")
+    INOUT_ID = SPREADSHEET_ID
+    LIST_ID = SPREADSHEET_ID
 
     # Mengunduh file credentials.json dari Gist
     response = requests.get(gist_url)
@@ -22,14 +30,7 @@ try:
         exit(1)
 
     # Ambil token bot dan konfigurasi lainnya dari variabel environment
-    BOT_TOKEN = os.getenv("BOT_TOKEN")
-    SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
-    INOUT_ID = os.getenv("INOUT_ID")
-    LIST_ID = os.getenv("LIST_ID")
-    RANGE_NAME = os.getenv("RANGE_NAME")
-    RANGE_INOUT = os.getenv("RANGE_INOUT")
-    RANGE_STOK = os.getenv("RANGE_STOK")
-    RANGE_LIST = os.getenv("RANGE_LIST")
+    
 
     # Periksa apakah variabel environment terisi dengan benar
     if not BOT_TOKEN or not SPREADSHEET_ID:
