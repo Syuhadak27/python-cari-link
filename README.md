@@ -43,6 +43,12 @@ sudo docker stop ID_DARI_Docker
 
 ## Deploy ke HEROKU
 
+Membuat aplikasi baru (optional)
+```shell
+heroku create --region us NAMA_APP
+```
+
+
 ```shell
 heroku git:remote -a nama app
 ```
