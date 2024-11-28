@@ -1,4 +1,7 @@
+
+
 import time
+import os
 import re
 import threading
 from telebot import TeleBot
@@ -9,6 +12,7 @@ from cache import get_google_sheet_data, cached_main_data, cached_list_data, res
 from extra.log import send_log_to_channel
 from extra.fsub import check_membership, prompt_join_channel
 from datetime import datetime, timedelta, timezone
+
 
 def handle_refresh(bot, message):
     global cached_inout_data, cached_stok_data, cached_main_data, cached_list_data, cache_timestamps
@@ -55,7 +59,7 @@ def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
                 f"<i>{row[0]}</i>",
                 f"<code><b>{row[1]}</b></code>"
             ] + row[2:]
-            response += "<blockquote>" + ' • '.join(formatted_row) + "</blockquote>\n"
+            response += "<blockquote>➤" + ' • '.join(formatted_row) + "</blockquote>\n"
         
         # Format waktu pembaruan cache terakhir dalam GMT+7
         last_update_time = (datetime.fromtimestamp(cache_timestamps["main"], timezone.utc) + timedelta(hours=7)).strftime("%d/%m/%Y %H:%M:%S")
@@ -63,8 +67,13 @@ def handle_message(bot, message, SPREADSHEET_ID, RANGE_NAME):
         schedule_deletion(bot, message.chat.id, message.message_id, 2)
     else:
         response = TIDAK_ADA
-        msg = bot.send_message(message.chat.id, response, reply_markup=create_refresh_button(), parse_mode="HTML")
-        schedule_deletion(bot, message.chat.id, msg.message_id, 7)
+        image_path = os.path.join(os.path.dirname(__file__), "gambar.jpg")  # Path relatif ke gambar
+        try:
+            with open(image_path, 'rb') as img:
+                bot.send_photo(message.chat.id, img, #caption=response, reply_markup=create_refresh_button(), parse_mode="HTML")
+    caption=response, parse_mode="HTML")
+        except FileNotFoundError:
+            bot.send_message(message.chat.id, "Gambar tidak ditemukan. Pastikan file gambar tersedia.", reply_markup=create_refresh_button(), parse_mode="HTML")
         schedule_deletion(bot, message.chat.id, message.message_id, 2)
         return
 
