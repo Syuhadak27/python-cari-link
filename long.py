@@ -1,7 +1,3 @@
-
-
-
-
 def send_long_message_html(chat_id, message_text):
         max_length = 4096
         # Memastikan pesan tidak terpotong di tengah tag HTML

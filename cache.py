@@ -3,13 +3,11 @@
 import time
 from config import sheet
 
-# Variabel cache untuk menyimpan data agar tidak perlu mengakses ulang Google Sheets
 cached_inout_data = None
 cached_stok_data = None
 cached_main_data = None
 cached_list_data = None
 
-# Waktu kedaluwarsa cache dalam detik (24 jam)
 CACHE_EXPIRY = 45989
 cache_timestamps = {
     "inout": 0,

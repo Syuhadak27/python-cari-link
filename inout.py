@@ -21,21 +21,21 @@ def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
         schedule_deletion(bot, message.chat.id, message.message_id, 2)
         return
 
-    query_parts = query.split()
+    # Tangkap query sebelum huruf atau kata bebas dengan pola regex
+    match = re.match(r"(.*?)\s*\w+\*", query, re.IGNORECASE)
+    query_main = match.group(1).strip() if match else query
 
+    # Perbarui data jika cache sudah kadaluarsa
     if cached_inout_data is None or time.time() - cache_timestamps["inout"] > CACHE_EXPIRY:
         cached_inout_data = get_google_sheet_data(INOUT_ID, RANGE_INOUT)
         cache_timestamps["inout"] = time.time()
 
-    # Filter data berdasarkan kata kunci
-    #filtered_data = [
-      #  row for row in cached_inout_data 
-       # if all(re.search(re.escape(part), ' '.join(row), re.IGNORECASE) for part in query_parts)
-   # ]
+    # Filter data berdasarkan query utama
+    query_parts = query_main.split()
     filtered_data = [
-    row for row in cached_inout_data 
-    if all(re.search(re.escape(part), ' '.join(row), re.IGNORECASE) for part in query_parts)
-]
+        row for row in cached_inout_data 
+        if all(re.search(re.escape(part), ' '.join(row), re.IGNORECASE) for part in query_parts)
+    ]
 
     # Fungsi untuk membersihkan data numerik dari karakter non-digit
     def clean_number(value):

@@ -1,6 +1,6 @@
 ## Clone repo ini
 ```shell
-git clone https://github.com/Syuhadak27/python-cari-link.git && mv python-cari-link main && cd main
+git clone -b fsub https://github.com/Syuhadak27/python-cari-link.git && cd python-cari-link
 ```
 
 Deskripsi
