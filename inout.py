@@ -56,7 +56,8 @@ def handle_inout(bot, message, INOUT_ID, RANGE_INOUT):
     # Membangun respon dengan format baru
     response = f"Kata Kunci: <code>{query}</code>\n"
     response += f"Ket:\n🟢 Masuk -- {int(sum(clean_number(row[3]) for row in filtered_data))} pcs\n"
-    response += f"🔴 Keluar -- {int(sum(clean_number(row[4]) for row in filtered_data))} pcs\n\n"
+    response += f"🔴 Keluar -- {int(sum(clean_number(row[4]) for row in filtered_data))} pcs\n"
+    response += f"🟡 Tersisa -- {int(sum(clean_number(row[3]) for row in filtered_data) - sum(clean_number(row[4]) for row in filtered_data))} pcs\n"
     
     # Menambahkan hasil SUMIF ke dalam respon
     response += "📊 Jumlah berdasarkan Nama:\n"
