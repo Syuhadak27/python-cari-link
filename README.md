@@ -51,5 +51,3 @@ untuk menghentikan image docker yg berjalan
 ```shell
 sudo docker stop ID_DARI_DOCKER
 ```
-sudo docker stop ID_DARI_Docker
-```
